@@ -1,0 +1,45 @@
+img{
+    width: 200px;
+}
+h2.title{
+    padding-bottom: 2%;
+    font-size: 1.3rem;
+    text-align: center;
+}
+p{
+    font-size: 1.1rem;
+}
+
+.color{
+    background-color: gold;
+}
+
+.blue{
+    background-color: aqua;
+}
+
+p strong.pr-5{
+    padding-right: 73px !important;
+}
+
+.center{
+    text-align: center;
+}
+
+.hidden{
+    display: none;
+}
+
+.container{
+    width: 930px !important;
+}
+
+.down{
+    background-color: rgb(237, 28, 36) !important;
+    border-color: rgb(190, 21, 21) !important;
+    color: white !important;
+}
+
+.down:hover{
+    filter: brightness(110%) !important;
+}
