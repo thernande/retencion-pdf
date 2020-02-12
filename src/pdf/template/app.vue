@@ -129,9 +129,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <p class="pt-4">Consignados en la Administración de Impuestos de MEDELLIN. El presente Certificado se expide Únicamente para efectos tributarios</p>
                 <p class="pt-4 center">EXPEDIDO: GIRARDOTA, {{ date }}</p>
-                <p class="center">CERTIFICADO DE RETENCION EN LA FUENTE</p>
                 <p class="pt-5 mt-5 center">Firma: ______________________________________</p>
             </div>
         </div>
@@ -204,9 +202,14 @@
                         this.state= false;
                         //fecha
                         var f = new Date();
-                        this.date = (f.getMonth() +1) + "/" + f.getDate() + "/" + f.getFullYear();
-                        let sum = this.datas.length + this.tables.length;
-                        console.log(this.datas);
+                        var v = f.getMonth() +1 + f.getDate();
+                        if(v < 315 ){
+                            this.date = (f.getMonth() +1) + "/" + f.getDate() + "/" + f.getFullYear();
+                        }
+                        else{
+                            this.date = "03/15/2020";
+                        }
+                        console.log(this.date);
                     })
                     .catch((err) =>{
                         console.log(err);
