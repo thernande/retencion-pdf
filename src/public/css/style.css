@@ -15,7 +15,7 @@ p{
 }
 
 .blue{
-    background-color: aqua;
+    background-color: #59a9ff;
 }
 
 p strong.pr-5{
@@ -32,6 +32,10 @@ p strong.pr-5{
 
 .container{
     width: 930px !important;
+}
+
+#capture1 #capture2{
+    width: 900px !important;
 }
 
 .down{
