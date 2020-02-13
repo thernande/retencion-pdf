@@ -3,11 +3,8 @@ img{
 }
 h2.title{
     padding-bottom: 2%;
-    font-size: 1.3rem;
+    font-size: 1.3em;
     text-align: center;
-}
-p{
-    font-size: 1.1rem;
 }
 
 .color{
@@ -30,13 +27,12 @@ p strong.pr-5{
     display: none;
 }
 
-.container{
-    width: 930px !important;
+#capture{
+    width: 750px;
+    height: 950px !important;
 }
 
-#capture1 #capture2{
-    width: 900px !important;
-}
+
 
 .down{
     background-color: rgb(237, 28, 36) !important;
@@ -46,4 +42,17 @@ p strong.pr-5{
 
 .down:hover{
     filter: brightness(110%) !important;
+}
+
+
+body{
+    font-size: 12px;
+}
+
+p{
+    margin-bottom: 0;
+}
+
+table th{
+    padding: .5rem;
 }

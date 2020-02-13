@@ -31,19 +31,19 @@
                     <h2 class="title col">CERTIFICADO DE RETENCIÓN EN LA FUENTE AÑO GRAVABLE {{ ano }}</h2>
                 </div>
                 <div class="row">
-                    <p class="col"><strong>Agente Retenedor:</strong>   ABRACOL S.A</p>
+                    <p class="col"><strong class="mr-3">Agente Retenedor:</strong>   ABRACOL S.A</p>
                 </div>
                 <div class="row">
                     <p class="col">
-                        <strong class="pr-5 mr-5">NIT: </strong>
+                        <strong class="pr-5 mr-4">NIT: </strong>
                         890.911.327-1
                     </p>
                 </div>
                 <div class="row">
-                    <p class="col"><strong class="mr-5 pr-4">Dirección: </strong> AUTOPISTA NORTE KM 20 GIRARDOTA (ANT)</p>
+                    <p class="col"><strong class="mr-5 pr-3">Dirección: </strong> AUTOPISTA NORTE KM 20 GIRARDOTA (ANT)</p>
                 </div>
                 <div class="row">
-                    <p class="col"><strong class="mr-5 pr-4">Telefóno: </strong> 2895150</p>
+                    <p class="col"><strong class="mr-5 pr-3">Telefóno: </strong> 2895150</p>
                 </div>
                 <div class="pt-5">
                     <p><strong class="mr-3">NIT: </strong> {{ nit | number('0,0', { thousandsSeparator: '.' }) }}</p>
@@ -118,7 +118,7 @@
                     <tbody>
                         <tr v-for="table in orderedTables" :key="table.id"> <!-- aui va un for de vue para llenar los datos-->
                             <td>
-                                <p>{{ table.FiscalYear }} / {{ table.FiscalPeriod }}</p>
+                                <p>{{ ano }} / {{ table.FiscalPeriod }}</p>
                             </td>
                             <td>
                                 <p>{{ table.Fecha_Declaración }}</p>
@@ -187,6 +187,7 @@
             },
 
             prevPDF(){
+                console.log(this.$refs["capture"].scrollHeight);
                 this.$http.post('http://localhost:3002/retencion/', {
                     ano : this.ano,
                     nit : this.nit
@@ -200,6 +201,7 @@
                         this.Valor_letra = response.body.data1[0].Valor_letra;
                         this.tables = response.body.data2;
                         this.state= false;
+
                         //fecha
                         var f = new Date();
                         var v = f.getMonth() +1 + f.getDate();
@@ -209,7 +211,7 @@
                         else{
                             this.date = "03/15/2020";
                         }
-                        console.log(this.date);
+                        console.log(this.tables);
                     })
                     .catch((err) =>{
                         console.log(err);
@@ -217,25 +219,37 @@
             },
 
             toPdf(){
-                var doc = new jsPDF('p', 'mm');
+                var doc = new jsPDF('p', 'mm', 'letter');
                 let imgData;
                 let pdfName = "RET-"+this.nit+"-"+this.ano;
                 let sum = this.datas.length + this.tables.length;
-                if(sum <= 9){
-                    html2canvas(this.$refs["capture"]).then(function(canvas) {
-                        imgData = canvas.toDataURL('image/jpg');
-                        doc.addImage(imgData, 'JPG', 20, 6);
+                window.scrollTo(0,0);
+                
+                if(sum <= 5){
+                    html2canvas(this.$refs["capture"],{
+                        dpi: 300, 
+                        scale: 1
+                        }).then(function(canvas) {
+                        imgData = canvas.toDataURL('image/png');
+                        doc.addImage(imgData, 'PNG', 10, 6);
                         doc.save(pdfName+'.pdf');
                     });
                 }
                 else{
-                    html2canvas(this.$refs["capture1"]).then(function(canvas) {
-                        imgData = canvas.toDataURL('image/jpg');
-                        doc.addImage(imgData, 'JPG', 15, 20);
-                        html2canvas(document.querySelector("#capture2")).then(function(canvas1) {
-                            imgData = canvas1.toDataURL('image/jpg');
+                    html2canvas(this.$refs["capture1"],{
+                        dpi: 300, 
+                        scale: 1
+                        }).then(function(canvas) {
+                        imgData = canvas.toDataURL('image/png');
+                        doc.addImage(imgData, 'PNG', 10, 10);
+                        html2canvas(document.querySelector("#capture2"),{
+                            dpi: 300, 
+                            scale: 1,
+                            windowHeight: document.querySelector("#capture2").scrollHeight
+                        }).then(function(canvas1) {
+                            imgData = canvas1.toDataURL('image/png');
                             doc.addPage();
-                            doc.addImage(imgData, 'JPG', 15, 20);
+                            doc.addImage(imgData, 'PNG', 10, 10);
                             doc.save(pdfName+'.pdf');
                         });
                     });
