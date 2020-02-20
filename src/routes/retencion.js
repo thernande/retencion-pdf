@@ -4,17 +4,11 @@ const jwt = require('jsonwebtoken');
 var nodemailer = require('nodemailer');
 var retencion = express.Router();
 
-// FFAdress3 colocar token temporalmente en esta tabla
-// TaxPayerID es el nit en el campo vendor
-// vendor es la tabla que buscar
 
 const db = {}
-const sequelize = new Sequelize("Epicor10" , "SA" , "Epicor123" , { //prod
-//const sequelize = new Sequelize("test" , "root" , "" , {  //test
-   host: '10.1.1.31', //prod
-   //host: 'localhost', //test
-   dialect: 'mssql', //prod
-   //dialect: 'mysql', //test
+const sequelize = new Sequelize("Epicor10" , "SA" , "Epicor123" , { 
+   host: '10.1.1.31', 
+   dialect: 'mssql', 
    operatorAliases: false,
    timezone: "-05:00",
    pool:{
@@ -34,19 +28,17 @@ db.sequelize = sequelize
 var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 't.hernandez@abracol.com',
-    pass: 'tiempo4560'
+    user: 'comunicaciones.abracol@abracol.com',
+    pass: 'Abr4col2020'
   }
 });
 
 
 //peticiones apartir de aqui 
 retencion.post("/", (req, res) =>{
-  console.log(req.body);
-  sequelize.query("SELECT FFAddress3 from Vendor WHERE FFAddress3 = '"+req.body['token']+"'",{ type: sequelize.QueryTypes.SELECT })
+  sequelize.query("SELECT Token_c  from Vendor WHERE Token_c = '"+req.body['token']+"'",{ type: sequelize.QueryTypes.SELECT })
   .then((resp) =>{
-    if(resp[0].FFAddress3 != req.body['token']){
-      console.log('token invalido')
+    if(resp[0].Token_c != req.body['token']){
       res.status(400).send({error: 'Token Invalido'})
     }
     else{
@@ -56,16 +48,14 @@ retencion.post("/", (req, res) =>{
   
   
           .then((respo) => {
-            console.log('token valido')
             res.status(200).send({data1 : resp , data2 : respo})
           })
           .catch((err) => {
             res.status(400).send({error: err})
           });
-        // res.send(resp);
       })
       .catch((err) => {
-        console.log(err);
+        res.status(400).send({error: 'No se han encontrado los datos de su certificado'})
       });
     }
   }).catch((err) => {
@@ -94,31 +84,32 @@ retencion.post("/solicitud", (req,res) =>{
     check:  true
    };
    const token = jwt.sign(payload, app.get("llave"));
-   sequelize.query("UPDATE Vendor SET FFAddress3 = '"+token.substring(0,49)+"' WHERE TaxPayerID = '"+req.body['nit']+"'",{ type: sequelize.QueryTypes.UPDATE } )
+   sequelize.query("UPDATE Vendor SET Token_c = '"+token+"' WHERE TaxPayerID = '"+req.body['nit']+"'",{ type: sequelize.QueryTypes.UPDATE } )
     .then((resp) =>{
-      console.log(resp)
-      sequelize.query("SELECT FFAddress3, EMailAddress from Vendor WHERE TaxPayerID = '"+req.body['nit']+"'",{ type: sequelize.QueryTypes.SELECT })
+      sequelize.query("SELECT Token_c, EMailAddress from Vendor WHERE TaxPayerID = '"+req.body['nit']+"'",{ type: sequelize.QueryTypes.SELECT })
       .then((resp) =>{
-        var mailOptions = {
-          from: 't.hernandez@abracol.com',
+        if(resp[0].EMailAddress != '')
+        {
+          var mailOptions = {
+          from: '"Abracol" comunicaciones.abracol@abracol.com',
           to: resp[0].EMailAddress,
           subject: 'test',
-          text: 'se le hace envio de la clave para imprimir su reporte de retencion en la fuente '+resp[0].FFAddress3
+          html: `<p>Se le realiza el envio de la clave para procesar su certificado de retencion en la fuente con Abracol S.A.</p>
+            <h3><strong>`+resp[0].Token_c+`</strong></h3>
+            <p>Para acceder a esta opcion copie esta clave que se le ha enviado y pegue la clave en el campo de texto donde la solicito</p>`
         };
       
-        transporter.sendMail(mailOptions, function(error, info){
-          if (error) {
-            console.log(error);
-          } else {
-            console.log('Email enviado: ' + info.response);
-          }
-        });
+        transporter.sendMail(mailOptions);
         res.status(200).send({msg: 'se ha enviado un correo electronico con la clave a ingresar'})
-      });
-    })
-    .catch((err) => {
-      res.status(400).send({error: err});
+      }
+      else{
+        res.status(400).send({msg: 'No cuenta con correo registrado. Por favor contactarse con nosotros para actualizar sus datos'});
+      }
     });
+  })
+  .catch((err) => {
+    res.status(400).send({error: err});
+  });
 })
 
 module.exports = retencion;

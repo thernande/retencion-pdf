@@ -56,3 +56,57 @@ p{
 table th{
     padding: .5rem;
 }
+
+.navbar{
+    background-color: #fff24d !important;
+}
+
+.nav-link{
+    background-color: black;
+    color: white !important;
+    border-radius: 50%;
+    border-color: white !important;
+    border-style: solid !important;
+    height: 35px;
+    width: 35px;
+    font-size: medium;
+    text-align: center;
+    vertical-align: center;
+}
+
+.fa{
+  margin-top: 7px;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.mobile{
+    position: absolute;
+    right: 20%;
+    font-size: large;
+}
+
+.phone-number{
+    position: absolute;
+    right: 3%;
+    top:10%;
+}
+
+.search{
+    background-color: #efe81a;
+    border-color: #ffd53c;
+    color: black;
+}
+
+.search:hover{
+    background-color: #fffa70;
+    border-color: white;
+    color: #48443b;
+}
+
+.search:active{
+    background-color: #efe81a !important;
+    border-color: #ffd53c !important;
+    color: black;
+}

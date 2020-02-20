@@ -6,14 +6,14 @@
                     <div class="form-row mb-2">
                         <div class="col-5">
                             <label for="ano">Año</label>
-                            <input type="text" id="ano" v-model="ano" class="form-control " placeholder="Ingrese el año aqui">
+                            <input type="number" id="ano" v-model="ano" class="form-control " placeholder="Ingrese el año aqui">
                         </div>
                         <div class="col-6">
                             <label for="nit">NIT</label>
-                            <input type="text" id="nit" v-model="nit" class="form-control" placeholder="Ingrese su nit aqui"> 
+                            <input type="number" id="nit" v-model="nit" class="form-control" placeholder="Ingrese su nit aqui"> 
                         </div>
                         <div class="col-12 pt-3">
-                            <button class="btn btn-primary col-5" @click="validate" data-target="#Validate">Buscar</button>
+                            <button class="btn btn-primary col-5 search" @click="validate" data-target="#Validate">Generar Certificado</button>
                             <button class="btn btn-primary col-6 down" @click.prevent="toPdf" :disabled="state">Solicitar PDF</button>
                         </div>
                     </div>
@@ -33,13 +33,13 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                          <label for="Solicitar">Si cuenta con la clave para buscar su certificado de retencion, por favor introduzcala o puede solicitar el envio de la clave a su correo electronico como proveedor dando clic al boton "Solicitar Clave"</label>
+                          <label for="Solicitar">Si cuenta con la clave para generar su certificado de retención, por favor introdúzcala o puede solicitar el envió de la clave a su correo electrónico como proveedor dando clic al botón "Solicitar Clave"</label>
                           <input type="text" v-model="token" class="form-control" id="Solicitar" aria-describedby="helpId" placeholder="Ingrese su clave aqui">
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @click.prevent="Request">Solicitar Clave</button>
-                        <button type="button" class="btn btn-primary" @click.prevent="prevPDF">Buscar Certificado</button>
+                        <button type="button" class="btn btn-primary search" @click.prevent="prevPDF">Generar Certificado</button>
                     </div>
                 </div>
             </div>
@@ -152,7 +152,8 @@
 </template>
 
 <script>
-    // 71578805  890943038 42689823 71733458
+    // 71578805  890943038 42689823 71733458 900038687 890900557 900027761 900542975
+
     export default {
 
         data(){
@@ -185,19 +186,32 @@
                     nit: this.nit
                 }).then((response) => {
                     alert(response.body.msg);
+                })
+                .catch((err) =>{
+                    alert(err.body.msg);
                 });
             },
             
             validate(){
-                this.$http.post("./retencion/validar", {
-                    nit: this.nit
-                }).then((response) => {
-                    alert(response.body.msg);
-                    $('#Validate').modal('toggle');
-                })
-                .catch((Err) =>{
+                if(this.nit == ''){
                     alert('Su Nit no ha sido encontrado, por favor verifiquelo nuevamente')
-                });
+                }
+                else{
+                    if(this.ano == ''){
+                        alert('Por favor, Ingrese el año')
+                    }
+                    else{
+                        this.$http.post("./retencion/validar", {
+                            nit: this.nit
+                        }).then((response) => {
+                            alert(response.body.msg);
+                            $('#Validate').modal('toggle');
+                        })
+                        .catch((Err) =>{
+                            alert('Su Nit no ha sido encontrado, por favor verifiquelo nuevamente')
+                        });
+                    }
+                }
             },
             
 
@@ -222,7 +236,7 @@
 
                         //fecha
                         var f = new Date();
-                        var v = f.getMonth() +1 + f.getDate();
+                        var v = f.getMonth() + 1+ '' + f.getDate();
                         if(v < 315 ){
                             this.date = (f.getMonth() +1) + "/" + f.getDate() + "/" + f.getFullYear();
                         }
