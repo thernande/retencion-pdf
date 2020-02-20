@@ -13,9 +13,33 @@
                             <input type="text" id="nit" v-model="nit" class="form-control" placeholder="Ingrese su nit aqui"> 
                         </div>
                         <div class="col-12 pt-3">
-                            <button class="btn btn-primary col-5" @click.prevent="prevPDF">Buscar</button>
-                            <button class="btn btn-primary col-6 down" :disabled="state" @click.prevent="toPdf">Descargar PDF</button>
+                            <button class="btn btn-primary col-5" @click="validate" data-target="#Validate">Buscar</button>
+                            <button class="btn btn-primary col-6 down" @click.prevent="toPdf" :disabled="state">Solicitar PDF</button>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- modal para validar token (?) -->
+        <div class="modal fade" id="Validate" tabindex="-1" role="dialog" aria-labelledby="Validate" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Solicitar clave</h5>
+                        <button type="button"  class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" id="close-modal">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                          <label for="Solicitar">Si cuenta con la clave para buscar su certificado de retencion, por favor introduzcala o puede solicitar el envio de la clave a su correo electronico como proveedor dando clic al boton "Solicitar Clave"</label>
+                          <input type="text" v-model="token" class="form-control" id="Solicitar" aria-describedby="helpId" placeholder="Ingrese su clave aqui">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click.prevent="Request">Solicitar Clave</button>
+                        <button type="button" class="btn btn-primary" @click.prevent="prevPDF">Buscar Certificado</button>
                     </div>
                 </div>
             </div>
@@ -45,9 +69,9 @@
                 <div class="row">
                     <p class="col"><strong class="mr-5 pr-3">Telefóno: </strong> 2895150</p>
                 </div>
-                <div class="pt-5">
-                    <p><strong class="mr-3">NIT: </strong> {{ nit | number('0,0', { thousandsSeparator: '.' }) }}</p>
-                    <p>{{ proveedor }}</p>
+                <div class="pt-5 pb-2">
+                    <p><strong class="mr-5">NIT: </strong> {{ nit | number('0,0', { thousandsSeparator: '.' }) }}</p>
+                    <p><strong class="mr-2">Retenido a: </strong>{{ proveedor }}</p>
                 </div>
                 <table class="table table-bordered">
                     <thead>
@@ -55,7 +79,6 @@
                             <th class="color">CONCEPTO</th>
                             <th class="color">BASE</th>
                             <th class="color">Tarifa</th>
-                            <th class="color">BASE NO RETENIDA</th>
                             <th class="color">RETENCION</th>
                         </tr>
                     </thead>
@@ -65,30 +88,21 @@
                                 <p>{{ data.Concepto }}</p>
                             </th>
                             <th class="text-right">
-                                <p>{{ data.Base | currency('$', 0) }}</p>
+                                <p>{{ data.Base | currency('$', 2) }}</p>
                             </th>
                             <th>
                                 <p>{{ data.Tarifa }}</p>
                             </th>
                             <th class="text-right">
-                                <p>{{ data.Base_NO | currency('$', 0) }}</p>
-                            </th>
-                            <th class="text-right">
-                                <p>{{ data.Monto | currency('$', 0) }}</p>
+                                <p>{{ data.Monto | currency('$', 2) }}</p>
                             </th>
                         </tr>
                         <tr class="blue">
-                            <th>
-                                <p>TOTAL PAGO</p>
-                            </th>
-                            <th class="text-right">
-                                <p>{{ baseP | currency('$', 0) }}</p>
-                            </th>
-                            <th colspan="2">
+                            <th colspan="3">
                                 <p>TOTAL RETENCION</p>
                             </th>
-                            <th class="text-right">
-                                <p>{{ TOT_monto | currency('$', 0) }}</p>
+                            <th class="text-right" colspan="2">
+                                <p>{{ TOT_monto | currency('$', 2) }}</p>
                             </th>
                         </tr>
                         <tr>
@@ -98,7 +112,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <p>Los Valores antes Mencionados fueron declarados y consignados a la dirección de Impuestos y Aduanas nacionales - DIAN, tal como se realaciona a continuación:</p>
+                <p class="pb-2">Los Valores antes Mencionados fueron declarados y consignados a la dirección de Impuestos y Aduanas nacionales - DIAN, tal como se realaciona a continuación:</p>
             </div>
             <div ref="capture2" id="capture2" class="container-fluid">
                 <table class="table table-bordered">
@@ -147,13 +161,13 @@
                 proveedor:'',
                 ano: '',
                 nit: '',
-                URL: 'http://10.1.1.35:3002/API/customer/GetLisTByName',
                 baseP: '',
                 TOT_monto: '',
                 Valor_letra: '',
                 tables: '',
                 state: true,
-                date: ''
+                date: '',
+                token:''
             }
         },
 
@@ -165,32 +179,34 @@
 
         methods:
         {
-            pendingTask: function(){
 
-                
-                // GET /someUrl
-                this.$http.post('http://10.1.1.45:3002/TASK/pendingTask',{
-                    usr: 'afc'
-                },{ timeout: 50 })
-                .then((response) => {
-
-
-
-
-                })
-                .catch((e)=>{
-
-                    this.error = e
-                    console.log(e)
-                })
-
+            Request(){
+                this.$http.post("./retencion/solicitud", {
+                    nit: this.nit
+                }).then((response) => {
+                    alert(response.body.msg);
+                });
             },
+            
+            validate(){
+                this.$http.post("./retencion/validar", {
+                    nit: this.nit
+                }).then((response) => {
+                    alert(response.body.msg);
+                    $('#Validate').modal('toggle');
+                })
+                .catch((Err) =>{
+                    alert('Su Nit no ha sido encontrado, por favor verifiquelo nuevamente')
+                });
+            },
+            
 
             prevPDF(){
-                console.log(this.$refs["capture"].scrollHeight);
-                this.$http.post('http://localhost:3002/retencion/', {
+                
+                this.$http.post('./retencion/', {
                     ano : this.ano,
-                    nit : this.nit
+                    nit : this.nit,
+                    token: this.token
                 })
                     .then((response) =>{
                         //datos de las tablas
@@ -202,6 +218,8 @@
                         this.tables = response.body.data2;
                         this.state= false;
 
+                        console.log(response.body.data1[0]);
+
                         //fecha
                         var f = new Date();
                         var v = f.getMonth() +1 + f.getDate();
@@ -211,9 +229,11 @@
                         else{
                             this.date = "03/15/2020";
                         }
+                        $('#Validate').modal('toggle');
                         console.log(this.tables);
                     })
                     .catch((err) =>{
+                        alert('Token Invalido')
                         console.log(err);
                     });
             },
@@ -256,7 +276,8 @@
                    
                 }
             },
-            
+
+                
             
 
             created: function()

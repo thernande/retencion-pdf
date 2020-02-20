@@ -1,19 +1,19 @@
 const express = require('express');
-const app = express();
+app = express();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-
 // Setting
-app.set('port', process.env.PORT || 3002)
-
+app.set('port', process.env.PORT || 3050)
+app.set('llave', "p");
 
 
 //middlewares
+
 app.use(morgan('dev'));
-app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'))
 app.use(cors());
 app.use(function(req, res, next) {
