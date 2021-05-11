@@ -24,7 +24,7 @@
     "babel-core": "^6.26.3",
     "babel-loader": "^8.0.6",
     "babel-preset-env": "^1.7.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "vue": "^2.6.11",
     "vue-loader": "^15.8.3",
     "vue-resource": "^1.5.1",
