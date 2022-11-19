@@ -31,7 +31,7 @@
     "vue-select": "^3.4.0",
     "vue-template-compiler": "^2.6.11",
     "vue2-filters": "^0.9.1",
-    "webpack-cli": "^3.3.10"
+    "webpack-cli": "^3.3.12"
   },
   "scripts": {
     "web": "nodemon src/express.js",
